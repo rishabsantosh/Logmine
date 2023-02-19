@@ -2,6 +2,8 @@ FROM tiangolo/uwsgi-nginx-flask:python3.7
 
 WORKDIR /py-app
 
+RUN pip3 install https://github.com/trungdq88/logmine.git
+
 COPY . .
 
 EXPOSE 8080
