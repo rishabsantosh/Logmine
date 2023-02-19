@@ -12,7 +12,6 @@ def welcome():
 
 @app.route('/cluster', methods = ['GET']) # Default value also is 'GET'
 def logs():
-    sys.argv
     os.system("./logmine Apache/Apache_2k.log -m0.5 > cout.txt")
     txt_file = open("cout.txt")
     lines = txt_file.readlines()
