@@ -1,7 +1,7 @@
 from flask import Flask, render_template
 import os
 import sys
-# from logmine_pkg.run import run
+from logmine_pkg.run import run
 
 # The below statement creates a WSGI application, it's required because it's a standard to communicate between web server and the web application
 app = Flask(__name__)
@@ -18,8 +18,10 @@ def logs():
     out = ""
 
     for line in lines:
+        out = out + "hello"
         out = out + line + '\n'
         # Try <br>, search how to add next line from python to html
+    out = out + "world" + "\n"
 
     txt_file.close()
 
