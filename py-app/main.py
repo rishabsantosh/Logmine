@@ -21,7 +21,7 @@ def logs():
         out = out + "hello"
         out = out + line + '\n'
         # Try <br>, search how to add next line from python to html
-    out = out + "world" + "\n" + len(txt_file)
+    out = out + "world" + "\n" + str(os.path.getsize("cout.txt"))
 
     txt_file.close()
 
