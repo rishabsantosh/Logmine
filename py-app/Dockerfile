@@ -4,9 +4,9 @@ WORKDIR /py-app
 
 RUN pip3 install "git+https://github.com/trungdq88/logmine.git"
 
-# RUN chmod +x logmine
-
 COPY . .
+
+RUN chmod +x logmine
 
 EXPOSE 8080
 
