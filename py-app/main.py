@@ -51,8 +51,10 @@ def uploadLogFile():
         # # the upload_fileobj method will automatically execute a multi-part upload
         # # in 5 MB chunks for all files over 15 MB
         # with open("./temp.log", "rb")
+        
+        filePath = "./" + fileName
 
-        cos.upload_file(fileName, COS_BUCKET_NAME, fileName)
+        cos.upload_file(filePath, COS_BUCKET_NAME, fileName)
 
         return render_template("index.html", fileUploadStatus = "File Uploaded Successfully")
 
