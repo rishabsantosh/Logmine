@@ -68,9 +68,22 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Karma", sans-serif}
 
   <div class="w3-row-padding w3-padding-16 w3-center">
     <div class="w3-quarter">
-        <form action = "/cluster" method = 'GET'>
+        <form action = "/uploadLog" method = "POST" enctype = "multipart/form-data">
+          <input type = "file" name = "file">
+          <button type = "submit">Upload Logs</button>
+          <p>{{ fileUploadStatus }}</p>
+        </form>
+    </div>
+    <div class = "w3-quarter">
+        <form action = "/cluster" method = "GET">
             <button type = "submit">Get Logs</button>
         </form>
+    </div>
+  </div>
+
+  <div class="w3-row-padding w3-padding-16 w3-center">
+    <div class="w3-quarter">
+        <p style = "height:400px;width:1000px"> {{ dataToRender }} </p>
     </div>
   </div>
 
