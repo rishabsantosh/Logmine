@@ -61,7 +61,22 @@ def uploadLogFile():
 @app.route("/cluster", methods = ["GET"]) # Default value also is 'GET'
 def logs():
     if request.method == 'GET':
-        os.system("./logmine Apache/Apache_2k.log -m0.5 > cout.txt")
+
+        COS_API_KEY_ID = os.getenv("API_KEY")
+        COS_SERVICE_ENDPOINT = os.getenv("SERVICE_ENDPOINT")
+        COS_RESOURCE_INSTANCE_ID = os.getenv("RESOURCE_INSTANCE_ID")
+        COS_BUCKET_NAME = os.getenv("BUCKET_NAME")
+
+        cos = ibm_boto3.client("s3",
+            ibm_api_key_id = COS_API_KEY_ID,
+            ibm_service_instance_id = COS_RESOURCE_INSTANCE_ID,
+            config = Config(signature_version = "oauth"),
+            endpoint_url = COS_SERVICE_ENDPOINT
+        )
+
+        cos.download_file(COS_BUCKET_NAME, "Apache_2k.log", "./Apache_2k.log")
+
+        os.system("./logmine ./Apache_2k.log -m0.5 > cout.txt")
         txt_file = open("cout.txt")
         lines = txt_file.readlines()
         out = ""
