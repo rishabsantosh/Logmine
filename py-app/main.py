@@ -1,29 +1,76 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
+from werkzeug.utils import secure_filename
 import os
-import sys
 from logmine_pkg.run import run
+
+import ibm_boto3
+from ibm_botocore.client import Config, ClientError
+
+UPLOAD_FOLDER = "./"
 
 # The below statement creates a WSGI application, it's required because it's a standard to communicate between web server and the web application
 app = Flask(__name__)
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
-@app.route('/') # Decorator
+@app.route("/") # Decorator
 def welcome():
     return render_template("index.html")
 
-@app.route('/cluster', methods = ['GET']) # Default value also is 'GET'
+@app.route("/uploadLog", methods = ["GET", "POST"])
+def uploadLogFile():
+
+    COS_API_KEY_ID = os.getenv("API_KEY")
+    COS_SERVICE_ENDPOINT = os.getenv("SERVICE_ENDPOINT")
+    COS_RESOURCE_INSTANCE_ID = os.getenv("RESOURCE_INSTANCE_ID")
+    COS_BUCKET_NAME = os.getenv("BUCKET_NAME")
+
+    cos = ibm_boto3.client("s3",
+        ibm_api_key = COS_API_KEY_ID,
+        ibm_service_instance_id = COS_RESOURCE_INSTANCE_ID,
+        config = Config(signature_version = "oauth"),
+        endpoint_url = COS_SERVICE_ENDPOINT
+    )
+
+    if request.method == "POST":
+        f = request.files['file']
+        fileName = secure_filename(f.filename)
+        f.save(os.path.join(app.config["UPLOAD_FOLDER"], fileName))
+
+        # # set 5 MB chunks
+        # part_size = 1024 * 1024 * 5
+        
+        # # set threadhold to 15 MB
+        # file_threshold = 1024 * 1024 * 15
+
+        # # set the transfer threshold and chunk size
+        # transfer_config = ibm_boto3.s3.transfer.TransferConfig(
+        #     multipart_threshold = file_threshold,
+        #     multipart_chunksize = part_size
+        # )
+
+        # # the upload_fileobj method will automatically execute a multi-part upload
+        # # in 5 MB chunks for all files over 15 MB
+        # with open("./temp.log", "rb")
+
+        cos.upload_file(fileName, COS_BUCKET_NAME, fileName)
+
+        return render_template("index.html", fileUploadStatus = "File Uploaded Successfully")
+
+@app.route("/cluster", methods = ["GET"]) # Default value also is 'GET'
 def logs():
-    os.system("./logmine Apache/Apache_2k.log -m0.5 > cout.txt")
-    txt_file = open("cout.txt")
-    lines = txt_file.readlines()
-    out = ""
+    if request.method == 'GET':
+        os.system("./logmine Apache/Apache_2k.log -m0.5 > cout.txt")
+        txt_file = open("cout.txt")
+        lines = txt_file.readlines()
+        out = ""
 
-    for line in lines:
-        out = out + line + '\n'
-        # Try <br>, search how to add next line from python to html
+        for line in lines:
+            out = out + line + '\n'
+            # Try <br>, search how to add next line from python to html
 
-    txt_file.close()
+        txt_file.close()
 
-    return render_template('lghtml.html', dataToRender = out)
+        return render_template("index.html", dataToRender = out)
 
 
 if __name__ == "__main__":
