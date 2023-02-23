@@ -25,7 +25,7 @@ def uploadLogFile():
     COS_BUCKET_NAME = os.getenv("BUCKET_NAME")
 
     cos = ibm_boto3.client("s3",
-        ibm_api_key = COS_API_KEY_ID,
+        ibm_api_key_id = COS_API_KEY_ID,
         ibm_service_instance_id = COS_RESOURCE_INSTANCE_ID,
         config = Config(signature_version = "oauth"),
         endpoint_url = COS_SERVICE_ENDPOINT
