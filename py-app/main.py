@@ -4,8 +4,8 @@ import os
 import csv
 from logmine_pkg.run import run
 
-# import ibm_boto3
-# from ibm_botocore.client import Config, ClientError
+import ibm_boto3
+from ibm_botocore.client import Config, ClientError
 
 UPLOAD_FOLDER = "./"
 
