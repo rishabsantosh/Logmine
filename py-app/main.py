@@ -1,10 +1,11 @@
 from flask import Flask, render_template, request
 from werkzeug.utils import secure_filename
 import os
+import csv
 from logmine_pkg.run import run
 
-import ibm_boto3
-from ibm_botocore.client import Config, ClientError
+# import ibm_boto3
+# from ibm_botocore.client import Config, ClientError
 
 UPLOAD_FOLDER = "./"
 
@@ -51,12 +52,15 @@ def uploadLogFile():
         # # the upload_fileobj method will automatically execute a multi-part upload
         # # in 5 MB chunks for all files over 15 MB
         # with open("./temp.log", "rb")
-        
+
         filePath = "./" + fileName
 
-        cos.upload_file(filePath, COS_BUCKET_NAME, fileName)
+        cos.upload_file(fileName, COS_BUCKET_NAME, fileName)
+
+        print(filePath)
 
         return render_template("index.html", fileUploadStatus = "File Uploaded Successfully")
+
 
 @app.route("/cluster", methods = ["GET"]) # Default value also is 'GET'
 def logs():
@@ -79,15 +83,42 @@ def logs():
         os.system("./logmine ./Apache_2k.log -m0.5 > cout.txt")
         txt_file = open("cout.txt")
         lines = txt_file.readlines()
-        out = ""
+        # out = ""
+
+        # for line in lines:
+        #     out = out + line + '\n'
+            # Try <br>, search how to add next line from python to html
+
+
+
+        
+        cnt = []
+        typ = []
 
         for line in lines:
-            out = out + line + '\n'
-            # Try <br>, search how to add next line from python to html
+            cline = line.split(" ")
+            cline = [i for i in cline if i != '']
+            clog = cline[2:]
+            cnt.append(cline[0])
+            typ.append(" ".join(clog)[:-1])
+
+        # print(cnt)
+        # print(typ)
+
+        with open("./templates/dataVis.csv", "w", newline = '') as file:
+            writer = csv.writer(file)
+
+            writer.writerow(["Count", "Message"])
+
+            for i in range(0, len(cnt)):
+                writer.writerow([cnt[i], typ[i]])
+
+
 
         txt_file.close()
 
-        return render_template("index.html", dataToRender = out)
+        # return render_template("index.html", dataToRender = out)
+        return render_template("index.html")
 
 
 if __name__ == "__main__":
